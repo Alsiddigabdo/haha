@@ -88,9 +88,7 @@
                 <div class="notification-content">
                   <div class="notification-avatar">
                     <img
-                     src="<%= notification.sender_id === userId ? currentUserAvatar : (notification.sender_avatar || 
-    (notification.sender_avatar && notification.sender_avatar.startsWith("http") ? notification.sender_avatar : 
-    `/uploads/images/pngwing.com.png`)) %>"                   class="avatar"
+                     src="<%= processAvatarUrl(notification.sender_avatar) %>"                   class="avatar"
                       alt="<%= notification.sender_name || 'User' %>"
                       onerror="this.src='/uploads/images/pngwing.com.png'"
                       style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"

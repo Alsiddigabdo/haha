@@ -378,7 +378,7 @@
             <div class="image-preview" id="preview<%= i %>">
               <% if (post['image' + i]) { %>
                 <div class="image-item">
-                  <img src="/uploads/images/<%= post['image' + i] %>" alt="الصورة <%= i %>" />
+                  <img src="<%= processPostImageUrl(post['image' + i]) %>" alt="الصورة <%= i %>" />
                   <button type="button" class="remove-btn" onclick="removeExistingImage(<%= i %>)">
                     <i class="fas fa-times"></i>
                   </button>

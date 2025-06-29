@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="/css/messages-ui.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" media="screen" />
 
-    <% const avatarUrl = user && user.avatar ? user.avatar : "/uploads/avatars/default-avatar.png"; %>
+    <% const avatarUrl = processAvatarUrl(user && user.avatar); %>
     <link rel="preload" href="<%= avatarUrl %>" as="image" />
 
     <meta property="og:title" content="الملف الشخصي لـ <%= user && user.name ? user.name : 'مستخدم' %> | اعملها براك" />
@@ -698,7 +698,7 @@
             <div class="profile-header">
                 <div class="avatar-section">
                     <img src="<%= avatarUrl %>"
-                         alt="Profile Picture"
+                         alt="الصورة الشخصية"
                          class="profile-picture"
                          onerror="this.src='/Uploads/images/pngwing.com.png'">
                 </div>

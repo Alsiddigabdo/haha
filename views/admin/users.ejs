@@ -40,9 +40,8 @@
                         <div class="user-card">
                             <div class="user-header">
                                 <img 
-                                    src="<%= user.avatar ? user.avatar : 
-                                    '/uploads/images/pngwing.com.png' %>" 
-                                    alt="<%= user.name %>" 
+                                    src="<%= processAvatarUrl(user.avatar) %>" 
+                                    alt="صورة المستخدم" 
                                     class="user-avatar" 
                                     onerror="this.src='/uploads/images/pngwing.com.png'"
                                 >

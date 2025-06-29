@@ -323,10 +323,9 @@
         <% messages.forEach((message) => { %>
           <li data-sender-id="<%= message.sender_id %>" data-message-id="<%= message.id %>" class="message-item <%= message.is_read ? '' : 'unread' %>">
             <img
-              src="<%= message.sender_avatar && message.sender_avatar.includes('/uploads/avatars/') ? message.sender_avatar : '/uploads/avatars/'+ (message.sender_avatar || 'default-avatar.png') %>"
+              src="<%= processAvatarUrl(message.sender_avatar) %>"
               class="message-avatar"
-              alt="<%= message.sender_name || 'User' %>"
-              onerror="this.src='/uploads/images/pngwing.com.png'"
+              alt="صورة المرسل"
             />
             <div class="message-content" onclick="window.location.href='/chat/<%= message.sender_id %>'">
               <div class="message-sender">

@@ -990,12 +990,12 @@
           </div>
           <% if (ads && ads.length > 0) { %>
             <% ads.forEach(ad => { %>
-              <div class="story-item" data-id="<%= ad.id %>" data-title="<%= ad.title %>" data-description="<%= ad.description %>" data-image="/uploads/ads/<%= ad.image %>">
+              <div class="story-item" data-id="<%= ad.id %>" data-title="<%= ad.title %>" data-description="<%= ad.description %>" data-image="<%= processAdImageUrl(ad.image) %>">
                 <% if (ad.image) { %>
-                  <img src="/uploads/ads/<%= ad.image %>" alt="<%= ad.title %>" loading="lazy">
+                  <img src="<%= processAdImageUrl(ad.image) %>" alt="<%= ad.title %>" loading="lazy">
                 <% } %>
                 <img
-                  src="<%= ad.user_avatar ? (ad.user_avatar.includes('/uploads/avatars/') ? ad.user_avatar : '/uploads/avatars/' + ad.user_avatar) : '/images/find.png' %>"
+                  src="<%= processAvatarUrl(ad.user_avatar) %>"
                   class="avatar"
                   alt="<%= ad.user_name || 'User' %>"
                   onerror="this.src='/images/find.png'"
@@ -1057,7 +1057,7 @@
                     <div class="post-avatar">
                       <a href="/profile?userId=<%= post.user_id %>">
                         <img
-                          src="<%= post.user_avatar ? (post.user_avatar.includes('/uploads/avatars/') ? post.user_avatar : '/uploads/avatars/' + post.user_avatar) : '/images/find.png' %>"
+                          src="<%= processAvatarUrl(post.user_avatar) %>"
                           class="avatar"
                           alt="<%= post.user_name || 'User' %>"
                           onerror="this.src='/images/find.png'"
@@ -1122,17 +1122,17 @@
                         <div class="comment">
                           <a href="/profile?userId=<%= comment.user_id %>">
                             <img
-                              src="${comment.user_avatar ? (comment.user_avatar.includes('/uploads/avatars/') ? comment.user_avatar : '/uploads/avatars/' + comment.user_avatar) : '/images/find.png'}"
-                              alt="${comment.user_name || 'User'}"
+                              src="<%= processAvatarUrl(comment.user_avatar) %>"
+                              alt="<%= comment.user_name || 'User' %>"
                               onerror="this.src='/images/find.png'"
                               class="comment-avatar"
                               loading="lazy"
                             />
                           </a>
                           <p>
-                            <a href="/profile?userId=${comment.user_id}" style="text-decoration: none; color: inherit;">
-                              <strong>${comment.user_name}</strong>
-                            </a>: ${comment.content}
+                            <a href="/profile?userId=<%= comment.user_id %>" style="text-decoration: none; color: inherit;">
+                              <strong><%= comment.user_name %></strong>
+                            </a>: <%= comment.content %>
                           </p>
                         </div>
                       <% }); %>
@@ -1473,7 +1473,7 @@
                 <div class="comment">
                   <a href="/profile?userId=${comment.user_id}">
                     <img
-                      src="${comment.user_avatar ? (comment.user_avatar.includes('/uploads/avatars/') ? comment.user_avatar : '/uploads/avatars/' + comment.user_avatar) : '/images/find.png'}"
+                      src="${comment.user_avatar ? (comment.user_avatar.includes('res.cloudinary.com') ? comment.user_avatar : '/images/find.png') : '/images/find.png'}"
                       alt="${comment.user_name || 'User'}"
                       onerror="this.src='/images/find.png'"
                       class="comment-avatar"
@@ -1482,8 +1482,8 @@
                   </a>
                   <p>
                     <a href="/profile?userId=${comment.user_id}" style="text-decoration: none; color: inherit;">
-                      <strong>${comment.user_name}</strong>
-                    </a>: ${comment.content}
+                      <strong><%= comment.user_name %></strong>
+                    </a>: <%= comment.content %>
                   </p>
                 </div>
               `)

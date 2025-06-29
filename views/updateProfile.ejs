@@ -508,7 +508,7 @@
 
           <% if (user.avatar) { %>
             <div class="current-avatar">
-              <img src="/uploads/avatars/<%= user.avatar %>" alt="الصورة الحالية" id="currentAvatar" />
+              <img src="<%= processAvatarUrl(user.avatar) %>" alt="الصورة الحالية" id="currentAvatar" />
               <p>الصورة الحالية</p>
             </div>
           <% } %>

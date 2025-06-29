@@ -12,10 +12,8 @@
     <meta property="og:description" content="<%= store.description || 'تسوق أفضل المنتجات من متجر ' + store.name %>">
     <meta property="og:type" content="website">
     <meta property="og:url" content="http://<%= req.headers.host %>/stores/<%= store.id %>">
-    <meta property="og:image" content="<%= store.cover_image || 
-        (store.logo && store.logo.startsWith("http") ? store.logo : 
-        (store.logo ? `/uploads/stores/${store.logo}` : 
-        '/images/default-store-og.jpg')) %>">
+    <meta property="og:image" content="<%= processLogoUrl(store.logo) || 
+        '/images/default-store-og.jpg' %>">
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">

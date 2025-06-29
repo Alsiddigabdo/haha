@@ -204,8 +204,8 @@
             <div class="application-header">
               <a href="/profile?userId=<%= application.applicant_id %>">
                 <img 
-                  src="<%= application.applicant_avatar || '/uploads/images/pngwing.com.png' %>"
-                  alt="<%= application.applicant_name %>" 
+                  src="<%= processAvatarUrl(application.applicant_avatar) %>"
+                  alt="صورة المتقدم" 
                   class="applicant-avatar"
                   loading="lazy"
                   onerror="this.src='/uploads/images/pngwing.com.png'"

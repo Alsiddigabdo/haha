@@ -304,7 +304,7 @@
                     <div class="request-card">
                         <div class="request-header">
                             <div class="request-info" style="display: flex; align-items: center; gap: 18px;">
-                                <img src="/uploads/avatars/<%= request.user_avatar || 'default-avatar.png' %>" alt="avatar" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #eee;box-shadow:0 2px 8px #eee;">
+                                <img src="<%= processAvatarUrl(request.user_avatar) %>" alt="avatar" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #eee;box-shadow:0 2px 8px #eee;">
                                 <div>
                                     <h3 style="margin-bottom:2px;"><%= request.store_name %></h3>
                                     <div class="request-meta">

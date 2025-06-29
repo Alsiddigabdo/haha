@@ -40,6 +40,9 @@ const ForumController = require("./controllers/ForumController");
 // استيراد الميدلوير الجديد للميتا الديناميكية
 const dynamicMetaMiddleware = require("./middleware/dynamicMetaMiddleware");
 
+// إضافة دوال معالجة الصور إلى جميع القوالب
+const { processImageUrl, processAvatarUrl, processLogoUrl, processAdImageUrl, processPostImageUrl, processDesignImageUrl } = require('./utils/imageUtils');
+
 const app = express();
 const server = http.createServer(app);
 // تفعيل الضغط
@@ -84,6 +87,17 @@ app.use(express.static(path.join(__dirname, "public"), {
 
 // إضافة الميدلوير الجديد للميتا الديناميكية
 app.use(dynamicMetaMiddleware);
+
+// إضافة دوال معالجة الصور إلى جميع القوالب
+app.use((req, res, next) => {
+  res.locals.processImageUrl = processImageUrl;
+  res.locals.processAvatarUrl = processAvatarUrl;
+  res.locals.processLogoUrl = processLogoUrl;
+  res.locals.processAdImageUrl = processAdImageUrl;
+  res.locals.processPostImageUrl = processPostImageUrl;
+  res.locals.processDesignImageUrl = processDesignImageUrl;
+  next();
+});
 
 // Middleware لحساب unreadCount وتمريره إلى جميع الصفحات
 app.use(async (req, res, next) => {
