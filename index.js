@@ -10,7 +10,7 @@ const cron = require("node-cron");
 const NotificationModel = require("./models/NotificationModel");
 const logger = require("./config/logger");
 const expressStatusMonitor = require("express-status-monitor");
-//hello world
+//hello 
 // استيراد الراوترات
 const userRouter = require("./router/UsersRouter");
 const forumRouter = require("./router/forumRoutes");
@@ -41,7 +41,16 @@ const ForumController = require("./controllers/ForumController");
 const dynamicMetaMiddleware = require("./middleware/dynamicMetaMiddleware");
 
 // إضافة دوال معالجة الصور إلى جميع القوالب
-const { processImageUrl, processAvatarUrl, processLogoUrl, processAdImageUrl, processPostImageUrl, processDesignImageUrl } = require('./utils/imageUtils');
+const { 
+  processImageUrl, 
+  processAvatarUrl, 
+  processLogoUrl, 
+  processAdImageUrl, 
+  processPostImageUrl, 
+  processDesignImageUrl,
+  processJobImageUrl,
+  processNotificationImageUrl
+} = require('./utils/imageUtils');
 
 const app = express();
 const server = http.createServer(app);
@@ -96,6 +105,8 @@ app.use((req, res, next) => {
   res.locals.processAdImageUrl = processAdImageUrl;
   res.locals.processPostImageUrl = processPostImageUrl;
   res.locals.processDesignImageUrl = processDesignImageUrl;
+  res.locals.processJobImageUrl = processJobImageUrl;
+  res.locals.processNotificationImageUrl = processNotificationImageUrl;
   next();
 });
 

@@ -307,7 +307,7 @@
                     <img 
                         src="<%= friendAvatar %>" 
                         alt="<%= friendName || 'صديق' %>"
-                        onerror="this.src='/uploads/images/pngwing.com.png'" 
+                        onerror="this.src='/images/find.png'" 
                     />
                     <div>
                         <h3><%= friendName || 'صديق' %></h3>
@@ -316,7 +316,7 @@
                         </span>
                     </div>
                 <% } else { %>
-                    <img src="/uploads/images/pngwing.com.png" alt="صديق" />
+                    <img src="/images/find.png" alt="صديق" />
                     <div>
                         <h3>صديق</h3>
                         <span class="status">غير متصل</span>
@@ -336,7 +336,7 @@
                         class="avatar" 
                         data-user-id="<%= message.sender_id %>"
                         alt="<%= message.sender_name || 'User' %>"
-                        onerror="this.src='/uploads/images/pngwing.com.png'" 
+                        onerror="this.src='/images/find.png'" 
                     />
                     <div class="content">
                         <strong><%= message.sender_name || 'غير معروف' %></strong>
@@ -435,7 +435,7 @@
             messageElement.dataset.messageId = message.id; // Add message ID for duplicate check and deletion
 
             // Use correct avatar based on sender
-            const avatarSrc = message.sender_avatar || '/uploads/images/pngwing.com.png';
+            const avatarSrc = message.sender_avatar || '/images/find.png';
 
             messageElement.innerHTML = `
                 <img 
@@ -443,7 +443,7 @@
                     class="avatar" 
                     data-user-id="${message.sender_id}"
                     alt="${message.sender_name || "User"}" 
-                    onerror="this.src='/uploads/images/pngwing.com.png'" 
+                    onerror="this.src='/images/find.png'" 
                 />
                 <div class="content">
                     <strong>${message.sender_name || "غير معروف"}</strong>
@@ -492,7 +492,7 @@
                         ...data.message, // Use the message data from the response
                         sender_id: userId, // Ensure sender ID is correct
                         sender_name: currentUserName || 'أنا', // Use current user's name
-                        sender_avatar: currentUserAvatar || '/uploads/images/pngwing.com.png' // Use current user's avatar
+                        sender_avatar: currentUserAvatar || '/images/find.png' // Use current user's avatar
                     };
                     appendMessage(sentMessageData);
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;

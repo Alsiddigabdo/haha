@@ -65,7 +65,7 @@ class ProfileControllers {
       if (!user) return res.status(404).json({ success: false, message: "المستخدم غير موجود" });
 
       const currentUser = await ProfileModels.GetProfileModels(userId);
-      const currentUserAvatar = currentUser && currentUser.avatar ? `/uploads/avatars/${currentUser.avatar}` : '/uploads/images/pngwing.com.png';
+      const currentUserAvatar = currentUser && currentUser.avatar ? (currentUser.avatar.includes("res.cloudinary.com") ? currentUser.avatar : `/images/find.png`) : '/images/find.png';
 
       // استخدام FriendshipModel للحصول على حالة الصداقة
       const friendStatusResult = await FriendshipModel.getRelationshipStatus(userId, friendId);
@@ -94,7 +94,7 @@ class ProfileControllers {
       const hasLiked = await ProfileModels.hasUserLiked(userId, friendId);
       const gallery = await ProfileModels.getGallery(friendId);
 
-      user.avatar = user.avatar ? (user.avatar.includes('/uploads/avatars/') ? user.avatar : `/uploads/avatars/${user.avatar}`) : '/uploads/images/pngwing.com.png';
+      user.avatar = user.avatar ? (user.avatar.includes('res.cloudinary.com') ? user.avatar : `/images/find.png`) : '/images/find.png';
       user.liked = hasLiked;
 
       console.log('إرسال البيانات للصفحة:', { 

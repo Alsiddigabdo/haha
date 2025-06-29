@@ -95,9 +95,10 @@
         li.dataset.id = request.id;
         li.innerHTML = `
             <div class="friend-info">
-                <img src="${request.sender_avatar || 	"/uploads/images/pngwing.com.png"}" 
-                     alt="صورة مرسل الطلب" 
-                     onerror="this.src=\"/uploads/images/pngwing.com.png\"" />
+                <img src="${request.sender_avatar || '/images/find.png'}"
+                     alt="${request.sender_name || 'User'}" 
+                     class="friend-avatar"
+                     onerror="this.src='/images/find.png'" />
                 <span>${request.sender_name}</span>
             </div>
             <div class="friend-actions">
@@ -164,9 +165,10 @@
         li.innerHTML = `
             <div class="friend-info">
                 <a href="/profile?userId=${friend.id}" class="friend-link">
-                  <img src="${friend.avatar || "/uploads/images/pngwing.com.png"}" 
-                       alt="صورة الصديق" 
-                       onerror="this.src='/uploads/images/pngwing.com.png'" />
+                  <img src="${friend.avatar || '/images/find.png'}"
+                       alt="${friend.name || 'User'}" 
+                       class="friend-avatar"
+                       onerror="this.src='/images/find.png'" />
                   <span>${friend.name}</span>
                 </a>
                 <span class="${friend.online ? "online" : "offline"}">${friend.online ? "متصل" : "غير متصل"}</span>
@@ -215,9 +217,10 @@
         li.dataset.id = blockedFriend.id;
         li.innerHTML = `
             <div class="friend-info">
-                <img src="${blockedFriend.avatar || 	"/uploads/images/pngwing.com.png"}" 
-                     alt="صورة المحظور" 
-                     onerror="this.src=\"/uploads/images/pngwing.com.png\"" />
+                <img src="${blockedFriend.avatar || '/images/find.png'}"
+                     alt="${blockedFriend.name || 'User'}" 
+                     class="friend-avatar"
+                     onerror="this.src='/images/find.png'" />
                 <span>${blockedFriend.name}</span>
             </div>
             <form class="friend-action-form" data-action="unblock" data-friend-id="${blockedFriend.id}">

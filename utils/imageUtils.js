@@ -4,7 +4,7 @@
  * إذا كان من uploads المحلي، ترجع صورة افتراضية
  */
 
-// الصور الافتراضية
+// الصور الافتراضية - استخدام أسماء ملفات متوافقة مع Linux
 const DEFAULT_IMAGES = {
   avatar: '/images/find.png',
   logo: '/images/find.png',
@@ -12,7 +12,9 @@ const DEFAULT_IMAGES = {
   post: '/images/find.png',
   design: '/images/find.png',
   product: '/images/find.png',
-  store: '/images/find.png'
+  store: '/images/find.png',
+  job: '/images/find.png',
+  notification: '/images/find.png'
 };
 
 /**
@@ -22,8 +24,8 @@ const DEFAULT_IMAGES = {
  * @returns {string} - رابط الصورة المعالج
  */
 function processImageUrl(imageUrl, type = 'avatar') {
-  // إذا كان الرابط فارغ أو null
-  if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined') {
+  // إذا كان الرابط فارغ أو null أو undefined
+  if (!imageUrl || imageUrl === 'null' || imageUrl === 'undefined' || imageUrl === '') {
     return DEFAULT_IMAGES[type] || DEFAULT_IMAGES.avatar;
   }
 
@@ -32,7 +34,7 @@ function processImageUrl(imageUrl, type = 'avatar') {
     return imageUrl;
   }
 
-  // إذا كان الرابط يبدأ بـ /uploads/ أو /Uploads/ (مسارات محلية)
+  // إذا كان الرابط يبدأ بـ /uploads/ أو /Uploads/ (مسارات محلية - غير متوفرة على Vercel)
   if (imageUrl.startsWith('/uploads/') || imageUrl.startsWith('/Uploads/')) {
     return DEFAULT_IMAGES[type] || DEFAULT_IMAGES.avatar;
   }
@@ -44,6 +46,16 @@ function processImageUrl(imageUrl, type = 'avatar') {
 
   // إذا كان الرابط يبدأ بـ /images/ (صور ثابتة في public)
   if (imageUrl.startsWith('/images/')) {
+    return imageUrl;
+  }
+
+  // إذا كان الرابط يبدأ بـ /icons/ (أيقونات في public)
+  if (imageUrl.startsWith('/icons/')) {
+    return imageUrl;
+  }
+
+  // إذا كان الرابط يبدأ بـ /favicon/ (أيقونات الموقع)
+  if (imageUrl.startsWith('/favicon/')) {
     return imageUrl;
   }
 
@@ -96,6 +108,24 @@ function processDesignImageUrl(designImageUrl) {
   return processImageUrl(designImageUrl, 'design');
 }
 
+/**
+ * دالة لمعالجة صورة الوظيفة
+ * @param {string} jobImageUrl - رابط صورة الوظيفة
+ * @returns {string} - رابط صورة الوظيفة المعالج
+ */
+function processJobImageUrl(jobImageUrl) {
+  return processImageUrl(jobImageUrl, 'job');
+}
+
+/**
+ * دالة لمعالجة صورة الإشعار
+ * @param {string} notificationImageUrl - رابط صورة الإشعار
+ * @returns {string} - رابط صورة الإشعار المعالج
+ */
+function processNotificationImageUrl(notificationImageUrl) {
+  return processImageUrl(notificationImageUrl, 'notification');
+}
+
 module.exports = {
   processImageUrl,
   processAvatarUrl,
@@ -103,5 +133,7 @@ module.exports = {
   processAdImageUrl,
   processPostImageUrl,
   processDesignImageUrl,
+  processJobImageUrl,
+  processNotificationImageUrl,
   DEFAULT_IMAGES
 }; 

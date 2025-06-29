@@ -17,5 +17,10 @@
     "CLOUDINARY_CLOUD_NAME": "dyftlowtv",
     "CLOUDINARY_API_KEY": "611352352948995",
     "CLOUDINARY_API_SECRET": "9rEZK2K5yAafu9hqq4LlmGhMuF8"
+  },
+  "functions": {
+    "index.js": {
+      "maxDuration": 30
+    }
   }
 }

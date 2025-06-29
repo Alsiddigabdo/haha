@@ -24,16 +24,19 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js" defer></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" media="print" onload="this.media='all'" />
 
-  <!-- تحسين الأداء: تحميل مسبق لصورة المستخد<link rel="preload" href="<%= currentUserAvatar ? currentUserAvatar : 
+  <!-- تحسين الأداء: تحميل مسبق لصورة المستخدم -->
+  <link rel="preload" href="<%= currentUserAvatar ? currentUserAvatar : 
     (user && user.avatar ? user.avatar : 
-    '/uploads/images/pngwing.com.png') %>" as="image" />  <!-- Open Graph لتحسين المشاركة على الشبكات الاجتماعية -->
+    '/images/find.png') %>" as="image" />
+
+  <!-- Open Graph لتحسين المشاركة على الشبكات الاجتماعية -->
   <meta property="og:title" content="المنتدى | اعملها براك" />
   <meta property="og:description" content="المنتدى الإبداعي على اعملها براك - شارك منشوراتك، اعرض إعلاناتك، وتواصل مع المبدعين." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.colorizer.com/forum" />
   <meta property="og:image" content="<%= currentUserAvatar ? currentUserAvatar : 
     (user && user.avatar ? user.avatar : 
-    '/uploads/images/pngwing.com.png') %>" />
+    '/images/find.png') %>" />
   <meta property="og:image:alt" content="صورة المستخدم في المنتدى" />
   <meta property="og:site_name" content="اعملها براك" />
   <meta property="og:locale" content="ar_AR" />
@@ -1086,7 +1089,7 @@
                   <% if (post.image1 || post.image2 || post.image3 || post.image4) { %>
                     <% [post.image1, post.image2, post.image3, post.image4].forEach((image) => { %>
                       <% if (image) { %>
-                        <img src="/uploads/images/<%= image %>" alt="صورة المنشور" class="post-image" loading="lazy" width="350" height="350" />
+                        <img src="<%= processPostImageUrl(image) %>" alt="صورة المنشور" class="post-image" loading="lazy" width="350" height="350" />
                       <% } %>
                     <% }); %>
                   <% } %>
@@ -1185,7 +1188,7 @@
   </div>
   
   <script>
-    const currentUserAvatar = "<%= currentUserAvatar ? (currentUserAvatar.includes('/uploads/avatars/') ? currentUserAvatar : '/uploads/avatars/' + currentUserAvatar) : '/uploads/images/pngwing.com.png' %>";
+    const currentUserAvatar = "<%= currentUserAvatar ? (currentUserAvatar.includes('/uploads/avatars/') ? currentUserAvatar : '/uploads/avatars/' + currentUserAvatar) : '/images/find.png' %>";
     const currentUserName = "<%= currentUserName || 'User' %>";
   
     document.addEventListener("DOMContentLoaded", () => {
@@ -1371,7 +1374,7 @@
               newAd.dataset.description = formData.get('description');
   
               if (result.filename) {
-                const imageUrl = `/uploads/ads/${result.filename}`;
+                const imageUrl = result.imageUrl || `/images/find.png`;
                 newAd.dataset.image = imageUrl;
                 newAd.innerHTML = `
                   <img src="${imageUrl}" alt="${formData.get('title')}" loading="lazy">

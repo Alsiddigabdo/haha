@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     img.onerror = function() {
       // التحقق من أن الصورة ليست بالفعل الصورة الافتراضية
       if (!this.src.includes('pngwing.com.png') && !this.src.includes('default-avatar.png')) {
-        this.src = '/uploads/images/pngwing.com.png';
+        this.src = '/images/find.png';
       }
     };
     
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } 
         // وإلا، افترض أنه اسم ملف فقط وأضفه إلى المسار الصحيح
         else if (!src.includes('/')) {
-          img.src = '/uploads/avatars/' + src;
+          img.src = '/images/find.png';
         }
       }
       
@@ -79,18 +79,18 @@ document.addEventListener('DOMContentLoaded', function() {
 // تصدير دالة مساعدة لتصحيح مسار الأفاتار
 function getCorrectAvatarPath(avatarPath) {
   if (!avatarPath) {
-    return '/uploads/images/pngwing.com.png';
+    return '/images/find.png';
   }
   
   if (avatarPath.includes('/uploads/avatars/')) {
-    return avatarPath;
+    return '/images/find.png';
   }
   
   if (avatarPath.startsWith('http')) {
     return avatarPath;
   }
   
-  return '/uploads/avatars/' + avatarPath;
+  return '/images/find.png';
 }
 
 // إضافة الدالة إلى الكائن العام window

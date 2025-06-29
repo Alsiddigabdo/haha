@@ -120,7 +120,7 @@ class ForumModel {
   static async getComments(postId) {
     const query = `
       SELECT c.content, c.created_at, u.id AS user_id, u.name AS user_name, 
-             IFNULL(u.avatar, '/uploads/images/pngwing.com.png') AS user_avatar
+             IFNULL(u.avatar, '/images/find.png') AS user_avatar
       FROM commentsforum c
       JOIN users u ON c.user_id = u.id
       WHERE c.post_id = ?
@@ -190,7 +190,7 @@ class ForumModel {
     const query = `
       SELECT p.id, p.content, p.image1, p.image2, p.image3, p.image4,
              p.created_at, u.id AS user_id, u.name AS user_name, 
-             IFNULL(u.avatar, '/uploads/images/pngwing.com.png') AS user_avatar,
+             IFNULL(u.avatar, '/images/find.png') AS user_avatar,
              (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS like_count,
              (SELECT COUNT(*) FROM commentsforum WHERE post_id = p.id) AS comment_count
       FROM postsforum p
@@ -381,7 +381,7 @@ class ForumModel {
     const query = `
       SELECT p.id, p.content, p.image1, p.image2, p.image3, p.image4,
              p.created_at, u.id AS user_id, u.name AS user_name, 
-             IFNULL(u.avatar, '/uploads/images/pngwing.com.png') AS user_avatar,
+             IFNULL(u.avatar, '/images/find.png') AS user_avatar,
              (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS like_count,
              (SELECT COUNT(*) FROM commentsforum WHERE post_id = p.id) AS comment_count
       FROM postsforum p

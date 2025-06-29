@@ -71,7 +71,7 @@ class ForumController {
           user_avatar: userInfo.avatar 
             ? userInfo.avatar
             : 
-            '/uploads/images/pngwing.com.png',
+            '/images/find.png',
           user_id: userId,
         },
       });
@@ -143,7 +143,7 @@ class ForumController {
       post.user_avatar = post.user_avatar 
         ? post.user_avatar
         : 
-        '/uploads/images/pngwing.com.png';
+        '/images/find.png';
 
       res.render("editPost", { post });
     } catch (err) {
@@ -271,7 +271,7 @@ class ForumController {
         user_avatar: comment.user_avatar 
           ? comment.user_avatar
           : 
-          '/uploads/images/pngwing.com.png'
+          '/images/find.png'
       }));
 
       res.json({ success: true, comments: enrichedComments });
@@ -347,7 +347,7 @@ class ForumController {
         currentUserAvatar = userInfo.avatar 
           ? userInfo.avatar
           : 
-          '/uploads/images/pngwing.com.png';
+          '/images/find.png';
         currentUserName = userInfo.name;
       } catch (err) {
         // لا تسجيل خطأ هنا، فقط تجاهل الرمز غير الصالح
@@ -368,13 +368,13 @@ class ForumController {
         user_avatar: post.user_avatar 
           ? post.user_avatar
           : 
-          '/uploads/images/pngwing.com.png',
+          '/images/find.png',
         comments: post.comments ? post.comments.map(comment => ({
           ...comment,
           user_avatar: comment.user_avatar 
             ? comment.user_avatar
             : 
-            '/uploads/images/pngwing.com.png'
+            '/images/find.png'
         })) : [],
         showEditDeleteButtons: isOwner,
         liked: liked
@@ -386,7 +386,7 @@ class ForumController {
       user_avatar: ad.user_avatar 
         ? ad.user_avatar
         : 
-        '/uploads/images/pngwing.com.png'
+        '/images/find.png'
     }));
 
     res.render("forum", { 
@@ -430,13 +430,13 @@ class ForumController {
       post.user_avatar = post.user_avatar 
         ? post.user_avatar
         : 
-        '/uploads/images/pngwing.com.png';
+        '/images/find.png';
       post.comments = post.comments ? post.comments.map(comment => ({
         ...comment,
         user_avatar: comment.user_avatar 
           ? comment.user_avatar
           : 
-          '/uploads/images/pngwing.com.png'
+          '/images/find.png'
       })) : [];
 
       res.render("postDetails", { post, currentUserId: userId });
@@ -481,7 +481,7 @@ class ForumController {
       user.avatar = user.avatar 
         ? user.avatar
         : 
-        '/uploads/images/pngwing.com.png';
+        '/images/find.png';
 
       res.render("profile", { user });
     } catch (err) {
@@ -508,7 +508,7 @@ class ForumController {
           user_avatar: post.user_avatar 
             ? post.user_avatar
             : 
-            '/uploads/images/pngwing.com.png',
+            '/images/find.png',
           showEditDeleteButtons: isOwner,
           liked: liked
         };
@@ -518,7 +518,7 @@ class ForumController {
       const currentUserAvatar = userInfo.avatar 
         ? userInfo.avatar
         : 
-        '/uploads/images/pngwing.com.png';
+        '/images/find.png';
       const currentUserName = userInfo.name;
 
       res.render("userPosts", { 

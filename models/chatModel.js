@@ -236,7 +236,7 @@ class ChatModel {
         if (err) return reject(err);
         const updates = results.map(user => ({
           userId: user.userId,
-          avatar: user.avatar ? (user.avatar.includes("/uploads/avatars/") ? user.avatar : `/uploads/avatars/${user.avatar}`) : "/uploads/images/pngwing.com.png"
+          avatar: user.avatar ? (user.avatar.includes("res.cloudinary.com") ? user.avatar : `/images/find.png`) : "/images/find.png"
         }));
         resolve(updates);
       });

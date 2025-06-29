@@ -90,7 +90,7 @@
                     <img
                      src="<%= processAvatarUrl(notification.sender_avatar) %>"                   class="avatar"
                       alt="<%= notification.sender_name || 'User' %>"
-                      onerror="this.src='/uploads/images/pngwing.com.png'"
+                      onerror="this.src='/images/find.png'"
                       style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"
                     />
                   </div>
@@ -159,7 +159,7 @@
 
         // Script remains largely the same, ensure variables like userId and currentUserAvatar are passed correctly
         const userId = "<%= typeof userId !== 'undefined' ? userId : '' %>";
-        const currentUserAvatar = "<%= typeof currentUserAvatar !== 'undefined' ? currentUserAvatar : '/uploads/images/pngwing.com.png' %>";
+        const currentUserAvatar = "<%= typeof currentUserAvatar !== 'undefined' ? currentUserAvatar : '/images/find.png' %>";
         const notificationList = document.getElementById('notification-list');
         const feedbackArea = document.getElementById('feedback-message-area');
         const unreadCountDisplay = document.getElementById('unread-count-display');
@@ -223,7 +223,7 @@
 
             const senderAvatar = notification.sender_id && notification.sender_id.toString() === userId.toString()
                 ? currentUserAvatar
-                : (notification.sender_avatar || '/uploads/images/pngwing.com.png');
+                : (notification.sender_avatar || '/images/find.png');
 
             li.innerHTML = `
                 <div class="notification-content">
@@ -232,7 +232,7 @@
                             src="${senderAvatar}"
                             class="avatar"
                             alt="${notification.sender_name || 'User'}"
-                            onerror="this.src='/uploads/images/pngwing.com.png'"
+                            onerror="this.src='/images/find.png'"
                             style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"
                         />
                     </div>

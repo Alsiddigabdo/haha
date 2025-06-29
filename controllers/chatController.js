@@ -23,8 +23,8 @@ class ChatController {
           friendId,
           userId,
           currentUserName: user ? user.name : '',
-          currentUserAvatar: user && user.avatar ? (user.avatar.includes("/uploads/avatars/") ? user.avatar : `/uploads/avatars/${user.avatar}`) : "/uploads/images/pngwing.com.png",
-          friendAvatar: friend && friend.avatar ? (friend.avatar.includes("/uploads/avatars/") ? friend.avatar : `/uploads/avatars/${friend.avatar}`) : "/uploads/images/pngwing.com.png",
+          currentUserAvatar: user && user.avatar ? (user.avatar.includes("res.cloudinary.com") ? user.avatar : `/images/find.png`) : "/images/find.png",
+          friendAvatar: friend && friend.avatar ? (friend.avatar.includes("res.cloudinary.com") ? friend.avatar : `/images/find.png`) : "/images/find.png",
           friendName: friend ? friend.name : '',
           friendLastActive: friend ? friend.last_active : '',
           unreadCount: 0,
@@ -33,14 +33,14 @@ class ChatController {
         });
       }
 
-      const currentUserAvatar = user.avatar ? (user.avatar.includes("/uploads/avatars/") ? user.avatar : `/uploads/avatars/${user.avatar}`) : "/uploads/images/pngwing.com.png";
-      const friendAvatar = friend.avatar ? (friend.avatar.includes("/uploads/avatars/") ? friend.avatar : `/uploads/avatars/${friend.avatar}`) : "/uploads/images/pngwing.com.png";
+      const currentUserAvatar = user.avatar ? (user.avatar.includes("res.cloudinary.com") ? user.avatar : `/images/find.png`) : "/images/find.png";
+      const friendAvatar = friend.avatar ? (friend.avatar.includes("res.cloudinary.com") ? friend.avatar : `/images/find.png`) : "/images/find.png";
 
       const enrichedMessages = messages.map((message) => ({
         ...message,
         sender_avatar: message.sender_id.toString() === userId.toString()
           ? currentUserAvatar
-          : (message.sender_avatar ? (message.sender_avatar.includes("/uploads/avatars/") ? message.sender_avatar : `/uploads/avatars/${message.sender_avatar}`) : "/uploads/images/pngwing.com.png"),
+          : (message.sender_avatar ? (message.sender_avatar.includes("res.cloudinary.com") ? message.sender_avatar : `/images/find.png`) : "/images/find.png"),
       }));
 
       await ChatModel.updateLastActive(userId);
@@ -82,13 +82,13 @@ class ChatController {
         const messages = await ChatModel.getMessagesAfterTimestamp(userId, friendId, lastTimestamp);
         
         const user = await ChatModel.getUserById(userId);
-        const currentUserAvatar = user.avatar ? (user.avatar.includes("/uploads/avatars/") ? user.avatar : `/uploads/avatars/${user.avatar}`) : "/uploads/images/pngwing.com.png";
+        const currentUserAvatar = user.avatar ? (user.avatar.includes("res.cloudinary.com") ? user.avatar : `/images/find.png`) : "/images/find.png";
 
         const enrichedMessages = messages.map((message) => ({
             ...message,
             sender_avatar: message.sender_id.toString() === userId.toString()
               ? currentUserAvatar
-              : (message.sender_avatar ? (message.sender_avatar.includes("/uploads/avatars/") ? message.sender_avatar : `/uploads/avatars/${message.sender_avatar}`) : "/uploads/images/pngwing.com.png"),
+              : (message.sender_avatar ? (message.sender_avatar.includes("res.cloudinary.com") ? message.sender_avatar : `/images/find.png`) : "/images/find.png"),
           }));
 
         res.json(enrichedMessages);
@@ -121,7 +121,7 @@ class ChatController {
       // Client will poll for new messages
       
       const sender = await ChatModel.getUserById(senderId);
-      const senderAvatar = sender.avatar ? (sender.avatar.includes("/uploads/avatars/") ? sender.avatar : `/uploads/avatars/${sender.avatar}`) : "/uploads/images/pngwing.com.png";
+      const senderAvatar = sender.avatar ? (sender.avatar.includes("res.cloudinary.com") ? sender.avatar : `/images/find.png`) : "/images/find.png";
       
       res.status(201).json({ 
           success: true, 
@@ -187,7 +187,7 @@ class ChatController {
 
       const messages = await ChatModel.getReceivedMessages(userId);
       const currentUser = await ChatModel.getUserById(userId);
-      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("/uploads/avatars/") ? currentUser.avatar : `/uploads/avatars/${currentUser.avatar}`) : "/uploads/images/pngwing.com.png";
+      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("res.cloudinary.com") ? currentUser.avatar : `/images/find.png`) : "/images/find.png";
       const friendId = messages.length > 0
         ? messages[0].sender_id.toString() === userId.toString() ? messages[0].receiver_id : messages[0].sender_id
         : null;
@@ -201,7 +201,7 @@ class ChatController {
         ...message,
         sender_avatar: message.sender_id.toString() === userId.toString()
           ? currentUserAvatar
-          : (message.sender_avatar ? (message.sender_avatar.includes("/uploads/avatars/") ? message.sender_avatar : `/uploads/avatars/${message.sender_avatar}`) : "/uploads/images/pngwing.com.png"),
+          : (message.sender_avatar ? (message.sender_avatar.includes("res.cloudinary.com") ? message.sender_avatar : `/images/find.png`) : "/images/find.png"),
       }));
 
       const unreadCount = await NotificationModel.getUnreadCount(userId);
@@ -221,7 +221,7 @@ class ChatController {
         messages: [],
         userId: null,
         friendId: null,
-        currentUserAvatar: "/uploads/images/pngwing.com.png",
+        currentUserAvatar: "/images/find.png",
         unreadCount: 0,
         unreadMessagesCount: 0,
         errorMessage: "حدث خطأ أثناء جلب الرسائل",
@@ -238,7 +238,7 @@ class ChatController {
       const userId = decoded.id;
 
       const currentUser = await ChatModel.getUserById(userId);
-      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("/uploads/avatars/") ? currentUser.avatar : `/uploads/avatars/${currentUser.avatar}`) : "/uploads/images/pngwing.com.png";
+      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("res.cloudinary.com") ? currentUser.avatar : `/images/find.png`) : "/images/find.png";
 
       const messages = await ChatModel.getLatestMessagesForFriends(userId);
       const enrichedMessages = messages
@@ -247,7 +247,7 @@ class ChatController {
           ...message,
           sender_avatar: message.sender_id.toString() === userId.toString()
             ? currentUserAvatar
-            : (message.sender_avatar ? (message.sender_avatar.includes("/uploads/avatars/") ? message.sender_avatar : `/uploads/avatars/${message.sender_avatar}`) : "/uploads/images/pngwing.com.png"),
+            : (message.sender_avatar ? (message.sender_avatar.includes("res.cloudinary.com") ? message.sender_avatar : `/images/find.png`) : "/images/find.png"),
         }));
 
       const unreadCount = await NotificationModel.getUnreadCount(userId);
@@ -265,7 +265,7 @@ class ChatController {
       res.render("messages", {
         messages: [],
         userId: null,
-        currentUserAvatar: "/uploads/images/pngwing.com.png",
+        currentUserAvatar: "/images/find.png",
         unreadCount: 0,
         unreadMessagesCount: 0,
         errorMessage: "حدث خطأ أثناء جلب الرسائل",
@@ -286,7 +286,7 @@ class ChatController {
       const unreadCount = await NotificationModel.getUnreadCount(userId);
       const unreadMessagesCount = await ChatModel.getUnreadCount(userId);
       const currentUser = await ChatModel.getUserById(userId);
-      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("/uploads/avatars/") ? currentUser.avatar : `/uploads/avatars/${currentUser.avatar}`) : "/uploads/images/pngwing.com.png";
+      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("res.cloudinary.com") ? currentUser.avatar : `/images/find.png`) : "/images/find.png";
 
       const filteredMessages = messages.filter(message => message.sender_id.toString() !== userId.toString());
       const latestMessages = filteredMessages.reduce((acc, message) => {
@@ -297,7 +297,7 @@ class ChatController {
         ...message,
         sender_avatar: message.sender_id.toString() === userId.toString()
           ? currentUserAvatar
-          : (message.sender_avatar ? (message.sender_avatar.includes("/uploads/avatars/") ? message.sender_avatar : `/uploads/avatars/${message.sender_avatar}`) : "/uploads/images/pngwing.com.png"),
+          : (message.sender_avatar ? (message.sender_avatar.includes("res.cloudinary.com") ? message.sender_avatar : `/images/find.png`) : "/images/find.png"),
       }));
 
       res.render("messages", {
@@ -326,7 +326,7 @@ class ChatController {
       const unreadCount = await NotificationModel.getUnreadCount(userId);
       const unreadMessagesCount = await ChatModel.getUnreadCount(userId);
       const currentUser = await ChatModel.getUserById(userId);
-      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("/uploads/avatars/") ? currentUser.avatar : `/uploads/avatars/${currentUser.avatar}`) : "/uploads/images/pngwing.com.png";
+      const currentUserAvatar = currentUser?.avatar ? (currentUser.avatar.includes("res.cloudinary.com") ? currentUser.avatar : `/images/find.png`) : "/images/find.png";
 
       const enrichedMessages = messages
         .filter(message => message.sender_id.toString() !== userId.toString())
@@ -334,7 +334,7 @@ class ChatController {
           ...message,
           sender_avatar: message.sender_id.toString() === userId.toString()
             ? currentUserAvatar
-            : (message.sender_avatar ? (message.sender_avatar.includes("/uploads/avatars/") ? message.sender_avatar : `/uploads/avatars/${message.sender_avatar}`) : "/uploads/images/pngwing.com.png"),
+            : (message.sender_avatar ? (message.sender_avatar.includes("res.cloudinary.com") ? message.sender_avatar : `/images/find.png`) : "/images/find.png"),
         }));
 
       res.render("messages", {
@@ -349,7 +349,7 @@ class ChatController {
       res.render("messages", {
         messages: [],
         userId: null,
-        currentUserAvatar: "/uploads/images/pngwing.com.png",
+        currentUserAvatar: "/images/find.png",
         unreadCount: 0,
         unreadMessagesCount: 0,
         errorMessage: "حدث خطأ أثناء جلب الرسائل",
@@ -406,7 +406,7 @@ class ChatController {
 
       await ChatModel.updateUserAvatar(userId, newAvatar);
       const updatedUser = await ChatModel.getUserById(userId);
-      const newAvatarPath = updatedUser.avatar ? (updatedUser.avatar.includes("/uploads/avatars/") ? updatedUser.avatar : `/uploads/avatars/${updatedUser.avatar}`) : "/uploads/images/pngwing.com.png";
+      const newAvatarPath = updatedUser.avatar ? (updatedUser.avatar.includes("res.cloudinary.com") ? updatedUser.avatar : `/images/find.png`) : "/images/find.png";
       
       res.status(200).json({ success: true, avatar: newAvatarPath });
     } catch (error) {

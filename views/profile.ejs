@@ -700,7 +700,7 @@
                     <img src="<%= avatarUrl %>"
                          alt="الصورة الشخصية"
                          class="profile-picture"
-                         onerror="this.src='/Uploads/images/pngwing.com.png'">
+                         onerror="this.src='/images/find.png'">
                 </div>
                 
                 <div class="user-info">
@@ -822,7 +822,7 @@
                 <div class="gallery-grid">
                   <% gallery.forEach(function(item) { %>
                     <div class="gallery-item">
-                      <img src="/Uploads/designs/<%= item.image %>" alt="<%= item.title || 'عمل تصميم' %>" loading="lazy" />
+                      <img src="<%= processDesignImageUrl(item.image) %>" alt="<%= item.title || 'عمل تصميم' %>" loading="lazy" />
                       <% if (typeof userId !== 'undefined' && userId === user.id) { %>
                         <form class="delete-form" data-design-id="<%= item.id %>">
                           <button type="submit" class="delete-btn design-delete-btn" aria-label="حذف العمل">
