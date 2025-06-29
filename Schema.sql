@@ -431,6 +431,23 @@ INSERT INTO `likes` (`id`, `post_id`, `friend_id`, `user_id`, `created_at`) VALU
 -- --------------------------------------------------------
 
 --
+-- بنية الجدول `shares`
+--
+
+CREATE TABLE `shares` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `post_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- إرجاع أو استيراد بيانات الجدول `shares`
+--
+
+-- --------------------------------------------------------
+
+--
 -- بنية الجدول `messages`
 --
 

@@ -14,6 +14,9 @@
   <!-- SweetAlert2 -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
+  <!-- Animate.css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  
   <style>
     * {
       margin: 0;
@@ -535,6 +538,37 @@
   </div>
 
   <script>
+    // إضافة رسالة تنبيه JSON
+    const jsonAlert = {
+      type: "warning",
+      title: "تنبيه مهم",
+      message: "يرجى التأكد من صحة جميع البيانات قبل التحديث",
+      timestamp: new Date().toISOString(),
+      version: "1.0"
+    };
+    
+    // عرض التنبيه عند تحميل الصفحة
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('JSON Alert:', JSON.stringify(jsonAlert, null, 2));
+      
+      // عرض التنبيه للمستخدم
+      Swal.fire({
+        icon: 'warning',
+        title: jsonAlert.title,
+        text: jsonAlert.message,
+        confirmButtonText: 'فهمت',
+        confirmButtonColor: '#FF6B35',
+        timer: 5000,
+        timerProgressBar: true,
+        showClass: {
+          popup: 'animate__animated animate__fadeInDown'
+        },
+        hideClass: {
+          popup: 'animate__animated animate__fadeOutUp'
+        }
+      });
+    });
+
     // Preview uploaded avatar
     function previewAvatar(input) {
       if (input.files && input.files[0]) {

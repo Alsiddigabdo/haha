@@ -277,19 +277,6 @@ class ForumModel {
     });
   }
 
-  static async sharePost(userId, postId) {
-    const query = `INSERT INTO shares (user_id, post_id, created_at) VALUES (?, ?, NOW())`;
-    return new Promise((resolve, reject) => {
-      db.query(query, [userId, postId], (err, result) => {
-        if (err) {
-          console.error("خطأ في مشاركة المنشور:", err);
-          return reject(new Error("خطأ في مشاركة المنشور"));
-        }
-        resolve(result);
-      });
-    });
-  }
-
   static async uploadAvatar(userId, avatar) {
     const query = `UPDATE users SET avatar = ? WHERE id = ?`;
     return new Promise((resolve, reject) => {
@@ -396,6 +383,28 @@ class ForumModel {
           return reject(new Error("خطأ في جلب منشورات المستخدم"));
         }
         resolve(results);
+      });
+    });
+  }
+
+  static async getPostById(postId) {
+    const query = `
+      SELECT p.id, p.content, p.image1, p.image2, p.image3, p.image4,
+             p.created_at, u.id AS user_id, u.name AS user_name, 
+             IFNULL(u.avatar, '/images/find.png') AS user_avatar,
+             (SELECT COUNT(*) FROM likes WHERE post_id = p.id) AS like_count,
+             (SELECT COUNT(*) FROM commentsforum WHERE post_id = p.id) AS comment_count
+      FROM postsforum p
+      JOIN users u ON p.user_id = u.id
+      WHERE p.id = ?
+    `;
+    return new Promise((resolve, reject) => {
+      db.query(query, [postId], (err, results) => {
+        if (err) {
+          console.error("خطأ في جلب المنشور:", err);
+          return reject(new Error("خطأ في جلب المنشور"));
+        }
+        resolve(results[0]);
       });
     });
   }

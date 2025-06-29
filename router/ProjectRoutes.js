@@ -3,12 +3,13 @@ const router = express.Router();
 const ProjectController = require("../controllers/ProjectController");
 const MessagesProjectController = require("../controllers/MessagesProjectController");
 const verifyToken = require("../middleware/verifyToken");
+const { upload } = require("../config/multerConfig");
 
 // عرض صفحة إنشاء المشروع
 router.get("/create", verifyToken, ProjectController.getCreateProject);
 
 // مسار إنشاء المشروع
-router.post("/create", verifyToken, ProjectController.postCreateProject);
+router.post("/create", verifyToken, upload.array("projectImages", 5), ProjectController.postCreateProject);
 
 // مسار عرض قائمة المشاريع
 router.get("/", ProjectController.getAllProjects);

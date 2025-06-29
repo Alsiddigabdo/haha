@@ -1,28 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const StoreController = require("../controllers/StoreController");
-const multer = require("multer");
+const { upload } = require("../config/multerConfig");
 const verifyToken = require("../middleware/verifyToken");
-
-// استخدام الذاكرة المؤقتة بدلاً من القرص لتجنب مشكلة نظام الملفات للقراءة فقط على Vercel
-const storage = multer.memoryStorage();
-
-const fileFilter = (req, file, cb) => {
-  // قبول الصور فقط
-  if (file.mimetype.startsWith("image/")) {
-    cb(null, true);
-  } else {
-    cb(new Error("يُسمح برفع الصور فقط"), false);
-  }
-};
-
-const upload = multer({
-  storage: storage,
-  fileFilter: fileFilter,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
-  }
-});
 
 // Middleware للتحقق من تسجيل الدخول
 const requireAuth = (req, res, next) => {
@@ -108,16 +88,14 @@ router.get("/:storeId", StoreController.getStorePage);
 
 // معالجة أخطاء multer
 router.use((error, req, res, next) => {
-  if (error instanceof multer.MulterError) {
-    if (error.code === "LIMIT_FILE_SIZE") {
-      return res.status(400).json({
-        success: false,
-        message: "حجم الملف كبير جداً (الحد الأقصى 5MB)"
-      });
-    }
+  if (error.code === "LIMIT_FILE_SIZE") {
+    return res.status(400).json({
+      success: false,
+      message: "حجم الملف كبير جداً (الحد الأقصى 10MB)"
+    });
   }
   
-  if (error.message === "يُسمح برفع الصور فقط") {
+  if (error.message === "يسمح فقط بملفات الصور") {
     return res.status(400).json({
       success: false,
       message: error.message

@@ -4,6 +4,7 @@ const ProjectModel = require("../models/Project");
 const NotificationModel = require("../models/NotificationModel");
 const jwt = require("jsonwebtoken");
 const cloudinary = require("../config/cloudinaryConfig");
+const { uploadMultipleFiles, uploadSingleFile } = require("../config/multerConfig");
 const fs = require("fs");
 
 class ForumController {
@@ -18,14 +19,18 @@ class ForumController {
       let imageUrls = [];
 
       if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          const uploadResult = await cloudinary.uploader.upload(file.path, {
-            folder: "forum_posts",
-            public_id: `post-${Date.now()}-${file.originalname}`,
+        const results = await uploadMultipleFiles(req.files, 'forum_posts');
+        
+        const failedUploads = results.filter(result => !result.success);
+        if (failedUploads.length > 0) {
+          return res.status(500).json({ 
+            success: false, 
+            message: "فشل في رفع بعض الصور",
+            errors: failedUploads.map(r => r.error)
           });
-          imageUrls.push(uploadResult.secure_url);
-          fs.unlinkSync(file.path); // حذف الملف المؤقت
         }
+        
+        imageUrls = results.map(result => result.url);
       }
 
       const canPost = await NotificationModel.canUserPost(userId);
@@ -91,12 +96,13 @@ class ForumController {
       let imageUrl = null;
 
       if (req.file) {
-        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-          folder: "forum_ads",
-          public_id: `ad-${Date.now()}-${req.file.originalname}`,
-        });
-        imageUrl = uploadResult.secure_url;
-        fs.unlinkSync(req.file.path); // حذف الملف المؤقت
+        const result = await uploadSingleFile(req.file, 'forum_ads');
+        
+        if (!result.success) {
+          return res.status(500).json({ success: false, message: "فشل في رفع صورة الإعلان." });
+        }
+        
+        imageUrl = result.url;
       }
 
       if (!title) {
@@ -163,7 +169,6 @@ class ForumController {
       const { content } = req.body;
       let imageUrls = [];
 
-      // حذف الصور القديمة من Cloudinary إذا كانت موجودة
       const oldPost = await forumModel.getPostDetails(postId);
       if (oldPost && oldPost.images) {
         for (const oldImage of oldPost.images) {
@@ -175,14 +180,14 @@ class ForumController {
       }
 
       if (req.files && req.files.length > 0) {
-        for (const file of req.files) {
-          const uploadResult = await cloudinary.uploader.upload(file.path, {
-            folder: "forum_posts",
-            public_id: `post-${Date.now()}-${file.originalname}`,
-          });
-          imageUrls.push(uploadResult.secure_url);
-          fs.unlinkSync(file.path); // حذف الملف المؤقت
+        const results = await uploadMultipleFiles(req.files, 'forum_posts');
+        
+        const failedUploads = results.filter(result => !result.success);
+        if (failedUploads.length > 0) {
+          return res.status(500).send("فشل في رفع بعض الصور");
         }
+        
+        imageUrls = results.map(result => result.url);
       }
 
       const isOwner = await forumModel.isPostOwner(postId, userId);
@@ -212,7 +217,6 @@ class ForumController {
         return res.status(403).send("أنت لست صاحب هذا المنشور.");
       }
 
-      // حذف الصور من Cloudinary
       const post = await forumModel.getPostDetails(postId);
       if (post && post.images) {
         for (const image of post.images) {
@@ -287,29 +291,13 @@ class ForumController {
         return res.status(403).send("معرف المستخدم مطلوب. الرجاء تسجيل الدخول.");
       }
       const userId = req.user.id;
-      const { commentId } = req.params;
+      const commentId = req.params.commentId;
 
       const liked = await forumModel.toggleLikeComment(commentId, userId);
-      res.json({ liked });
+      res.redirect("/forum");
     } catch (err) {
       console.error("خطأ أثناء تبديل الإعجاب على التعليق:", err);
       res.status(500).send("حدث خطأ أثناء تبديل الإعجاب على التعليق.");
-    }
-  }
-
-  static async sharePost(req, res) {
-    try {
-      if (!req.user || !req.user.id) {
-        return res.status(403).send("معرف المستخدم مطلوب. الرجاء تسجيل الدخول.");
-      }
-      const userId = req.user.id;
-      const postId = req.params.id;
-
-      await forumModel.sharePost(userId, postId);
-      res.redirect("/forum");
-    } catch (err) {
-      console.error("خطأ أثناء مشاركة المنشور:", err);
-      res.status(500).send("حدث خطأ أثناء مشاركة المنشور.");
     }
   }
 

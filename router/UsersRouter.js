@@ -1,14 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const UsersControllers = require("../controllers/usersControllers");
-const multer = require("multer");
-// استخدام الذاكرة المؤقتة بدلاً من القرص لتجنب مشكلة نظام الملفات للقراءة فقط على Vercel
-const upload = multer({ 
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 5 * 1024 * 1024 // حد أقصى 5 ميجابايت
-  }
-});
+const { upload } = require("../config/multerConfig");
 const AuthResetController = require('../controllers/AuthResetController');
 
 // مسار تسجيل الحساب الجديد مع رفع الصورة

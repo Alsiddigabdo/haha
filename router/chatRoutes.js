@@ -1,17 +1,8 @@
 const express = require("express");
-const multer = require("multer");
+const { upload } = require("../config/multerConfig");
 const ChatController = require("../controllers/chatController");
 
 const router = express.Router();
-
-// استخدام الذاكرة المؤقتة بدلاً من القرص لتجنب مشكلة نظام الملفات للقراءة فقط على Vercel
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // حد أقصى 5 ميجابايت
-  }
-});
 
 // عرض صفحة الدردشة مع الصديق
 router.get("/chat/:friendId", ChatController.getChatPage);

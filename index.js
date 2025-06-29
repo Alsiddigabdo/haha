@@ -10,7 +10,7 @@ const cron = require("node-cron");
 const NotificationModel = require("./models/NotificationModel");
 const logger = require("./config/logger");
 const expressStatusMonitor = require("express-status-monitor");
-//hello 
+//haha
 // استيراد الراوترات
 const userRouter = require("./router/UsersRouter");
 const forumRouter = require("./router/forumRoutes");
@@ -33,6 +33,7 @@ const adminUsersRoutes = require("./router/adminUsersRoutes");
 const changePasswordRoutes = require("./router/changePasswordRoutes");
 const storeRoutes = require("./router/StoreRoutes");
 const uploadRoutes = require("./router/uploadRoutes");
+const staticRoutes = require("./router/staticRoutes");
 const errorHandler = require("./middleware/errorHandler");
 const GlobalRoleController = require("./controllers/GlobalRoleController");
 const ForumController = require("./controllers/ForumController");
@@ -49,7 +50,11 @@ const {
   processPostImageUrl, 
   processDesignImageUrl,
   processJobImageUrl,
-  processNotificationImageUrl
+  processNotificationImageUrl,
+  processChatImageUrl,
+  processProjectImageUrl,
+  processProductImageUrl,
+  processStoreImageUrl
 } = require('./utils/imageUtils');
 
 const app = express();
@@ -59,14 +64,7 @@ app.use(compression());
 // تفعيل تصغير الملفات (CSS, JS)
 app.use(minify());
 app.use(expressStatusMonitor());
-// إعداد التخزين للملفات المرفوعة - استخدام الذاكرة المؤقتة لتجنب مشكلة نظام الملفات للقراءة فقط على Vercel
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 10 * 1024 * 1024 // حد أقصى 10 ميجابايت
-  }
-});
+
 // إعدادات البرامج الوسيطة
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -85,7 +83,17 @@ app.set("views", path.join(__dirname, "views"));
 // تحسين تقديم الملفات الثابتة مع تفعيل التخزين المؤقت
 app.use(express.static(path.join(__dirname, "public"), {
   maxAge: '1d', // تخزين مؤقت لمدة يوم واحد
-  etag: true
+  etag: true,
+  setHeaders: (res, path) => {
+    // إضافة headers للملفات الثابتة
+    if (path.endsWith('.css')) {
+      res.setHeader('Content-Type', 'text/css');
+    } else if (path.endsWith('.js')) {
+      res.setHeader('Content-Type', 'application/javascript');
+    } else if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.gif') || path.endsWith('.webp')) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000'); // تخزين مؤقت لمدة سنة للصور
+    }
+  }
 }));
 
 // تم إزالة مسار uploads لأن الصور ستكون على Cloudinary
@@ -107,6 +115,10 @@ app.use((req, res, next) => {
   res.locals.processDesignImageUrl = processDesignImageUrl;
   res.locals.processJobImageUrl = processJobImageUrl;
   res.locals.processNotificationImageUrl = processNotificationImageUrl;
+  res.locals.processChatImageUrl = processChatImageUrl;
+  res.locals.processProjectImageUrl = processProjectImageUrl;
+  res.locals.processProductImageUrl = processProductImageUrl;
+  res.locals.processStoreImageUrl = processStoreImageUrl;
   next();
 });
 
@@ -142,6 +154,7 @@ app.use("/", MessagesProjectRoutes);
 app.use("/", contactRoutes);
 app.use("/stores", storeRoutes);
 app.use("/", uploadRoutes);
+app.use("/", staticRoutes);
 app.use("/admin", adminMessageRoutes);
 app.use("/admin", adminDashboardRoutes);
 app.use("/admin", adminStatisticsRoutes);

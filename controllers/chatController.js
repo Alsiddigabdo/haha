@@ -1,6 +1,7 @@
 const ChatModel = require("../models/chatModel");
 const NotificationModel = require("../models/NotificationModel");
 const jwt = require("jsonwebtoken");
+const { uploadSingleFile } = require("../config/multerConfig");
 
 class ChatController {
   static async getChatPage(req, res) {
@@ -106,7 +107,18 @@ class ChatController {
       const decoded = jwt.verify(token, "your_jwt_secret");
       const senderId = decoded.id;
       const { receiverId, messageContent } = req.body;
-      const imagePath = req.file ? `/uploads/chatimage/${req.file.filename}` : null;
+      
+      let imagePath = null;
+      if (req.file) {
+        // رفع صورة الرسالة إلى Cloudinary
+        const result = await uploadSingleFile(req.file, 'ihobe-chat');
+        
+        if (!result.success) {
+          return res.status(500).json({ error: "فشل في رفع الصورة" });
+        }
+        
+        imagePath = result.url;
+      }
 
       if (!receiverId || (!messageContent?.trim() && !imagePath)) {
         return res.status(400).json({ error: "معرف المستلم أو المحتوى مطلوب" });
@@ -400,15 +412,25 @@ class ChatController {
 
       const decoded = jwt.verify(token, "your_jwt_secret");
       const userId = decoded.id;
-      const newAvatar = req.file ? req.file.filename : null;
 
-      if (!newAvatar) return res.status(400).json({ error: "يجب تحميل صورة جديدة" });
+      if (!req.file) {
+        return res.status(400).json({ error: "لم يتم رفع أي صورة" });
+      }
 
-      await ChatModel.updateUserAvatar(userId, newAvatar);
-      const updatedUser = await ChatModel.getUserById(userId);
-      const newAvatarPath = updatedUser.avatar ? (updatedUser.avatar.includes("res.cloudinary.com") ? updatedUser.avatar : `/images/find.png`) : "/images/find.png";
+      // رفع الصورة الجديدة إلى Cloudinary
+      const result = await uploadSingleFile(req.file, 'ihobe-avatars');
       
-      res.status(200).json({ success: true, avatar: newAvatarPath });
+      if (!result.success) {
+        return res.status(500).json({ error: "فشل في رفع الصورة" });
+      }
+
+      await ChatModel.updateUserAvatar(userId, result.url);
+      
+      res.json({ 
+        success: true, 
+        avatarUrl: result.url,
+        message: "تم تحديث الصورة الرمزية بنجاح" 
+      });
     } catch (error) {
       logger.error("Error in updateAvatar:", error);
       res.status(500).json({ error: "خطأ في تحديث الصورة الرمزية" });

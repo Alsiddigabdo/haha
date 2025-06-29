@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const path = require("path");
 const fs = require("fs");
 const StoreModel = require("../models/StoreModel");
+const { uploadSingleFile } = require("../config/multerConfig");
 
 class ProfileControllers {
   static async addDesign(req, res) {
@@ -12,22 +13,29 @@ class ProfileControllers {
       if (!req.user || !req.user.id) return res.status(403).json({ success: false, message: "مطلوب تسجيل الدخول." });
       const userId = req.user.id;
       const { title, subtitle } = req.body;
-      const image = req.file ? req.file.filename : null;
-  
-      if (!image || !title) return res.status(400).json({ success: false, message: "الصورة والعنوان مطلوبان." });
-  
-      const designId = await ProfileModels.addDesign(userId, image, title, subtitle);
+      
+      if (!req.file || !title) return res.status(400).json({ success: false, message: "الصورة والعنوان مطلوبان." });
+
+      // رفع الصورة إلى Cloudinary
+      const result = await uploadSingleFile(req.file, 'ihobe-designs');
+      
+      if (!result.success) {
+        return res.status(500).json({ success: false, message: "فشل في رفع الصورة." });
+      }
+
+      const designId = await ProfileModels.addDesign(userId, result.url, title, subtitle);
       res.json({
         success: true,
         design: {
           id: designId,
           user_id: userId,
-          image,
+          image: result.url,
           title,
           subtitle
         }
       });
     } catch (error) {
+      console.error('خطأ في addDesign:', error);
       res.status(500).json({ success: false, message: "حدث خطأ في الخادم." });
     }
   }
@@ -167,11 +175,14 @@ class ProfileControllers {
 
       let avatar = currentUser.avatar;
       if (req.file) {
-        avatar = req.file.filename;
-        if (currentUser.avatar) {
-          const oldAvatarPath = path.join(__dirname, "..", "uploads", "avatars", currentUser.avatar);
-          if (fs.existsSync(oldAvatarPath)) fs.unlinkSync(oldAvatarPath);
+        // رفع الصورة الجديدة إلى Cloudinary
+        const result = await uploadSingleFile(req.file, 'ihobe-avatars');
+        
+        if (!result.success) {
+          return res.status(500).send("فشل في رفع صورة البروفايل.");
         }
+        
+        avatar = result.url;
       }
 
       const updatedData = {
@@ -190,6 +201,7 @@ class ProfileControllers {
       if (result && result.affectedRows > 0) res.redirect("/profile");
       else res.status(400).send("فشل في تحديث الملف الشخصي");
     } catch (error) {
+      console.error('خطأ في UpdateProfileControllers:', error);
       res.status(500).send("حدث خطأ أثناء تحديث الملف الشخصي.");
     }
   }

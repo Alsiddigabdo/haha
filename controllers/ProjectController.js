@@ -1,6 +1,7 @@
 const Project = require("../models/Project");
 const MessagesProject = require("../models/MessagesProject");
 const NotificationModel = require("../models/NotificationModel");
+const { uploadMultipleFiles } = require("../config/multerConfig");
 
 class ProjectController {
   static getCreateProject(req, res) {
@@ -44,12 +45,31 @@ class ProjectController {
         });
       }
 
+      let projectImages = [];
+      if (req.files && req.files.length > 0) {
+        // رفع صور المشروع إلى Cloudinary
+        const results = await uploadMultipleFiles(req.files, 'ihobe-projects');
+        
+        // التحقق من نجاح جميع الرفعات
+        const failedUploads = results.filter(result => !result.success);
+        if (failedUploads.length > 0) {
+          return res.status(500).render("create_project", {
+            errorMessage: "فشل في رفع بعض الصور",
+            successMessage: null,
+            projectData: req.body
+          });
+        }
+        
+        projectImages = results.map(result => result.url);
+      }
+
       const projectData = {
         title: projectTitle,
         description: manualDescription.trim(),
         budget: budgetValue,
         duration: durationValue,
         user_id: userId,
+        images: projectImages
       };
 
       await Project.create(projectData);

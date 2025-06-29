@@ -1,5 +1,6 @@
 const MessagesProject = require("../models/MessagesProject");
 const Project = require("../models/Project");
+const { uploadSingleFile } = require("../config/multerConfig");
 
 class MessagesProjectController {
   static async getMessages(req, res) {
@@ -30,6 +31,19 @@ class MessagesProjectController {
       }
 
       let projectId, receiverId;
+      let imagePath = null;
+
+      // معالجة الصورة إن وجدت
+      if (req.file) {
+        // رفع صورة الرسالة إلى Cloudinary
+        const result = await uploadSingleFile(req.file, 'ihobe-project-messages');
+        
+        if (!result.success) {
+          return res.status(500).json({ success: false, message: "فشل في رفع الصورة" });
+        }
+        
+        imagePath = result.url;
+      }
 
       // جلب المحادثة الحالية إن وجدت
       const existingConversation = await MessagesProject.findByConversationId(conversationId);
@@ -58,12 +72,14 @@ class MessagesProjectController {
         project_id: projectId,
         receiver_id: receiverId,
         status: "accepted",
+        image_path: imagePath
       });
 
       res.json({
         success: true,
         message: "تم إرسال الرسالة بنجاح",
         conversationId: conversationId,
+        imagePath: imagePath
       });
     } catch (error) {
       res.status(500).json({ success: false, message: "حدث خطأ في الخادم", error: error.message });

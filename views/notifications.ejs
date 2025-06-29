@@ -7,21 +7,64 @@
       border-radius: 12px;
       font-size: 0.9rem;
       margin-right: 8px;
+      display: inline-block;
+      min-width: 20px;
+      text-align: center;
+      font-weight: bold;
     }
     .notifications-page .avatar {
-      width: 35px;
-      height: 35px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       object-fit: cover;
       border: 2px solid #fff;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+      display: block;
+    }
+    .notification-item {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background 0.2s;
+    }
+    .notification-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+    .notification-avatar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 48px;
+      min-height: 48px;
+    }
+    .notification-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .notification-image-wrapper {
+      margin-top: 6px;
+    }
+    .notification-image {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
     }
     .skeleton {
       background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
       background-size: 400% 100%;
       animation: skeleton-loading 1.2s ease-in-out infinite;
       border-radius: 8px;
-      min-height: 60px;
+      min-height: 70px;
       margin-bottom: 10px;
     }
     @keyframes skeleton-loading {
@@ -36,10 +79,30 @@
       min-height: 300px;
       transition: min-height 0.3s cubic-bezier(.4,0,.2,1);
     }
-    .skeleton {
-      min-height: 60px;
-      margin-bottom: 10px;
-      border-radius: 8px;
+    
+    /* Ensure notification count in header is properly styled */
+    .notification-icon .notification-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #ff4757;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      min-width: 18px;
+      text-align: center;
+    }
+    
+    /* Hide notification count when zero */
+    .notification-icon .notification-count[style*="display: none"],
+    .notification-icon .notification-count:empty {
+      display: none !important;
     }
   </style>
 
@@ -88,10 +151,11 @@
                 <div class="notification-content">
                   <div class="notification-avatar">
                     <img
-                     src="<%= processAvatarUrl(notification.sender_avatar) %>"                   class="avatar"
+                     src="<%= processAvatarUrl(notification.sender_avatar) %>"
+                      class="avatar"
                       alt="<%= notification.sender_name || 'User' %>"
                       onerror="this.src='/images/find.png'"
-                      style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;"
+                      loading="lazy"
                     />
                   </div>
                   <div class="notification-details">
@@ -111,6 +175,7 @@
                           onerror="this.style.display='none'"
                           width="60"
                           height="60"
+                          loading="lazy"
                         />
                       </div>
                     <% } %>
@@ -144,19 +209,8 @@
       }
     }
 
-    // Add at the beginning of your script section
     document.addEventListener('DOMContentLoaded', function() {
-        // Clear browser cache for this page
-        if (window.performance && window.performance.navigation.type === 0) {
-            window.location.reload(true);
-        }
-        
-        // Force reload images
-        document.querySelectorAll('img').forEach(img => {
-            const src = img.src;
-            img.src = src + '?v=' + new Date().getTime();
-        });
-
+        // لا تعيد تحميل الصور إجباريًا (لمنع البطء والوميض)
         // Script remains largely the same, ensure variables like userId and currentUserAvatar are passed correctly
         const userId = "<%= typeof userId !== 'undefined' ? userId : '' %>";
         const currentUserAvatar = "<%= typeof currentUserAvatar !== 'undefined' ? currentUserAvatar : '/images/find.png' %>";
@@ -186,27 +240,43 @@
         function updateUnreadCountDisplay(count) {
             try {
                 const numericCount = Number(count) || 0;
+                
+                // Update page count display
                 if (unreadCountDisplay) {
                     if (numericCount > 0) {
                         unreadCountDisplay.textContent = numericCount;
-                        unreadCountDisplay.style.display = 'inline-block'; // Use inline-block for span
+                        unreadCountDisplay.style.display = 'inline-block';
                     } else {
                         unreadCountDisplay.textContent = '0';
                         unreadCountDisplay.style.display = 'none';
                     }
                 }
-                // Update header count (assuming id='header-unread-count')
-                const headerUnreadCount = document.getElementById('header-unread-count');
-                if (headerUnreadCount) {
+                
+                // Update header count - use more specific selector
+                const headerNotificationCount = document.querySelector('.notification-icon .notification-count');
+                if (headerNotificationCount) {
                     if (numericCount > 0) {
-                        headerUnreadCount.textContent = numericCount;
-                        headerUnreadCount.style.display = 'inline-block';
+                        headerNotificationCount.textContent = numericCount;
+                        headerNotificationCount.style.display = 'inline-block';
                     } else {
-                        headerUnreadCount.style.display = 'none';
+                        headerNotificationCount.style.display = 'none';
                     }
                 }
+                
+                // Also update any other notification count elements
+                const allNotificationCounts = document.querySelectorAll('.notification-count');
+                allNotificationCounts.forEach(countElement => {
+                    if (countElement.closest('.notification-icon')) {
+                        if (numericCount > 0) {
+                            countElement.textContent = numericCount;
+                            countElement.style.display = 'inline-block';
+                        } else {
+                            countElement.style.display = 'none';
+                        }
+                    }
+                });
             } catch (error) {
-                console.error('Error updating unread count display:', error);
+                // Silently handle errors - no console.error
             }
         }
 
@@ -266,11 +336,11 @@
             if (!userId) return; // Don't poll if not logged in
             try {
                 const response = await fetch(`/notifications/getNew?lastTimestamp=${lastNotificationTimestamp}`);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) return; // Silently handle 404 and other errors
                 
                 const contentType = response.headers.get('content-type');
                 if (!contentType || !contentType.includes('application/json')) {
-                    throw new Error('Response is not JSON');
+                    return; // Silently handle non-JSON responses
                 }
                 
                 const data = await response.json();
@@ -290,7 +360,7 @@
                     }
                 }
             } catch (error) {
-                console.error('Error fetching new notifications:', error);
+                // Silently handle network errors - no console.error
             }
         }
 
@@ -299,13 +369,13 @@
             if (!userId) return; // Don't fetch if not logged in
             try {
                 const response = await fetch('/notifications/unread-count');
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) return; // Silently handle 404 and other errors
                 const data = await response.json();
                 if (data.success) {
                     updateUnreadCountDisplay(data.unreadCount);
                 }
             } catch (error) {
-                console.error('Error fetching unread notification count:', error);
+                // Silently handle network errors - no console.error
             }
         }
 
@@ -353,8 +423,7 @@
                         throw new Error(errorMsg);
                     }
                 } catch (error) {
-                    console.error('Error deleting notification:', error);
-                    // لا داعي لعرض الرسالة هنا لأننا عرضناها بالفعل أعلاه
+                    // Silently handle errors - no console.error
                     deleteButton.disabled = false;
                     deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
                 }
@@ -371,11 +440,9 @@
                         targetItem.classList.remove('unread');
                         targetItem.classList.add('viewed');
                         fetchUnreadNotificationCount();
-                    } else {
-                        console.error('Failed to mark notification as viewed');
                     }
                 } catch (error) {
-                    console.error('Error marking notification as viewed:', error);
+                    // Silently handle errors - no console.error
                 }
             }
         });
@@ -403,7 +470,6 @@
                         throw new Error(result.message || 'فشل حذف جميع الإشعارات');
                     }
                 } catch (error) {
-                    console.error('Error deleting all notifications:', error);
                     displayFeedback(error.message || 'حدث خطأ أثناء حذف الكل.', 'error');
                     deleteAllButton.disabled = notificationList.querySelectorAll('li.notification-item').length === 0; // Re-enable only if there are items
                 } finally {
@@ -436,12 +502,30 @@
             if (deleteAllButton) {
                  deleteAllButton.disabled = notificationList.querySelectorAll('li.notification-item').length === 0;
             }
+            
+            // Ensure notification count is properly initialized
+            setTimeout(() => {
+                updateUnreadCountDisplay(locals.unreadCount || 0);
+            }, 100);
         });
 
         // Clear polling interval when the user navigates away
         window.addEventListener('beforeunload', () => {
             if (pollingInterval) {
                 clearInterval(pollingInterval);
+            }
+        });
+        
+        // Also clear interval when page becomes hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                if (pollingInterval) {
+                    clearInterval(pollingInterval);
+                }
+            } else {
+                if (userId && !pollingInterval) {
+                    pollingInterval = setInterval(fetchNewNotifications, 30000);
+                }
             }
         });
     });

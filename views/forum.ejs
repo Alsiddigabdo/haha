@@ -25,18 +25,14 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" media="print" onload="this.media='all'" />
 
   <!-- تحسين الأداء: تحميل مسبق لصورة المستخدم -->
-  <link rel="preload" href="<%= currentUserAvatar ? currentUserAvatar : 
-    (user && user.avatar ? user.avatar : 
-    '/images/find.png') %>" as="image" />
+  <link rel="preload" href="<%= processAvatarUrl(currentUserAvatar) %>" as="image" />
 
   <!-- Open Graph لتحسين المشاركة على الشبكات الاجتماعية -->
   <meta property="og:title" content="المنتدى | اعملها براك" />
   <meta property="og:description" content="المنتدى الإبداعي على اعملها براك - شارك منشوراتك، اعرض إعلاناتك، وتواصل مع المبدعين." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.colorizer.com/forum" />
-  <meta property="og:image" content="<%= currentUserAvatar ? currentUserAvatar : 
-    (user && user.avatar ? user.avatar : 
-    '/images/find.png') %>" />
+  <meta property="og:image" content="<%= processAvatarUrl(currentUserAvatar) %>" />
   <meta property="og:image:alt" content="صورة المستخدم في المنتدى" />
   <meta property="og:site_name" content="اعملها براك" />
   <meta property="og:locale" content="ar_AR" />
@@ -45,7 +41,7 @@
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="المنتدى | اعملها براك" />
   <meta name="twitter:description" content="المنتدى الإبداعي على اعملها براك - شارك منشوراتك، اعرض إعلاناتك، وتواصل مع المبدعين." />
-  <meta name="twitter:image" content="<%= currentUserAvatar ? (currentUserAvatar.includes('/uploads/avatars/') ? currentUserAvatar : '/uploads/avatars/' + currentUserAvatar) : '/uploads/images/pngwing.com.png' %>" />
+  <meta name="twitter:image" content="<%= processAvatarUrl(currentUserAvatar) %>" />
 
   <!-- تحسين الأداء: إضافة DNS Prefetch و Preconnect -->
   <link rel="dns-prefetch" href="//www.colorizer.com" />
@@ -962,7 +958,7 @@
               <textarea name="content" placeholder="اكتب محتوى المنشور هنا..." required></textarea>
               <a href="/profile?userId=<%= currentUserId %>">
                 <img
-                  src="<%= currentUserAvatar ? (currentUserAvatar.includes('/uploads/avatars/') ? currentUserAvatar : '/uploads/avatars/' + currentUserAvatar) : '/images/find.png' %>"
+                  src="<%= processAvatarUrl(currentUserAvatar) %>"
                   alt="صورة المستخدم"
                   onerror="this.src='/images/find.png'"
                   loading="lazy"
@@ -1125,17 +1121,17 @@
                         <div class="comment">
                           <a href="/profile?userId=<%= comment.user_id %>">
                             <img
-                              src="<%= processAvatarUrl(comment.user_avatar) %>"
-                              alt="<%= comment.user_name || 'User' %>"
+                              src="${comment.user_avatar ? (comment.user_avatar.includes('res.cloudinary.com') ? comment.user_avatar : '/images/find.png') : '/images/find.png'}"
+                              alt="${comment.user_name || 'User'}"
                               onerror="this.src='/images/find.png'"
                               class="comment-avatar"
                               loading="lazy"
                             />
                           </a>
                           <p>
-                            <a href="/profile?userId=<%= comment.user_id %>" style="text-decoration: none; color: inherit;">
-                              <strong><%= comment.user_name %></strong>
-                            </a>: <%= comment.content %>
+                            <a href="/profile?userId=${comment.user_id}" style="text-decoration: none; color: inherit;">
+                              <strong>${comment.user_name}</strong>
+                            </a>: ${comment.content}
                           </p>
                         </div>
                       <% }); %>
@@ -1188,7 +1184,7 @@
   </div>
   
   <script>
-    const currentUserAvatar = "<%= currentUserAvatar ? (currentUserAvatar.includes('/uploads/avatars/') ? currentUserAvatar : '/uploads/avatars/' + currentUserAvatar) : '/images/find.png' %>";
+    const currentUserAvatar = "<%= processAvatarUrl(currentUserAvatar) %>";
     const currentUserName = "<%= currentUserName || 'User' %>";
   
     document.addEventListener("DOMContentLoaded", () => {
@@ -1254,21 +1250,7 @@
           const result = await response.json();
   
           if (result.success) {
-            // Swal.fire({
-            //   icon: 'success',
-            //   title: 'تم!',
-            //   text: result.message,
-            //   confirmButtonText: 'موافق',
-            //   confirmButtonColor: '#ff6b35',
-            //   background: '#fff',
-            //   customClass: {
-            //     popup: 'custom-success-popup',
-            //     title: 'custom-success-title',
-            //     content: 'custom-success-content'
-            //   }
-            // }).then(() => {
-              location.reload(); // إعادة تحميل الصفحة لعرض المنشور الجديد
-            // });
+            location.reload(); // إعادة تحميل الصفحة لعرض المنشور الجديد
           } else {
             Swal.fire({
               icon: 'error',
@@ -1360,39 +1342,31 @@
           const result = await response.json();
   
           if (result.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'تم!',
-              text: result.message,
-              confirmButtonText: 'موافق',
-              confirmButtonColor: '#ff6b35',
-            }).then(() => {
-              const newAd = document.createElement('div');
-              newAd.classList.add('story-item');
-              newAd.dataset.id = result.adId;
-              newAd.dataset.title = formData.get('title');
-              newAd.dataset.description = formData.get('description');
+            const newAd = document.createElement('div');
+            newAd.classList.add('story-item');
+            newAd.dataset.id = result.adId;
+            newAd.dataset.title = formData.get('title');
+            newAd.dataset.description = formData.get('description');
   
-              if (result.filename) {
-                const imageUrl = result.imageUrl || `/images/find.png`;
-                newAd.dataset.image = imageUrl;
-                newAd.innerHTML = `
-                  <img src="${imageUrl}" alt="${formData.get('title')}" loading="lazy">
-                  <img src="${currentUserAvatar}" class="avatar" alt="${currentUserName}" loading="lazy">
-                  <span class="username">${currentUserName}</span>
-                `;
-              } else {
-                newAd.innerHTML = `
-                  <img src="${currentUserAvatar}" class="avatar" alt="${currentUserName}" loading="lazy">
-                  <span class="username">${currentUserName}</span>
-                `;
-              }
+            if (result.filename) {
+              const imageUrl = result.imageUrl || `/images/find.png`;
+              newAd.dataset.image = imageUrl;
+              newAd.innerHTML = `
+                <img src="${imageUrl}" alt="${formData.get('title')}" loading="lazy">
+                <img src="${currentUserAvatar}" class="avatar" alt="${currentUserName}" loading="lazy">
+                <span class="username">${currentUserName}</span>
+              `;
+            } else {
+              newAd.innerHTML = `
+                <img src="${currentUserAvatar}" class="avatar" alt="${currentUserName}" loading="lazy">
+                <span class="username">${currentUserName}</span>
+              `;
+            }
   
-              storySlider.insertBefore(newAd, addStoryBtn.nextSibling);
-              stories = Array.from(document.querySelectorAll('.story-item:not(.add-story)'));
-              addStoryModal.classList.remove('show');
-              addAdForm.reset();
-            });
+            storySlider.insertBefore(newAd, addStoryBtn.nextSibling);
+            stories = Array.from(document.querySelectorAll('.story-item:not(.add-story)'));
+            addStoryModal.classList.remove('show');
+            addAdForm.reset();
           } else {
             Swal.fire({
               icon: 'error',
@@ -1485,8 +1459,8 @@
                   </a>
                   <p>
                     <a href="/profile?userId=${comment.user_id}" style="text-decoration: none; color: inherit;">
-                      <strong><%= comment.user_name %></strong>
-                    </a>: <%= comment.content %>
+                      <strong>${comment.user_name}</strong>
+                    </a>: ${comment.content}
                   </p>
                 </div>
               `)
@@ -1510,12 +1484,41 @@
   
       // منطق مشاركة واتساب
       document.querySelectorAll('.whatsapp-share-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', async function() {
+          const postId = this.getAttribute('data-post-id');
           const postContent = this.getAttribute('data-post-content');
           const postUrl = this.getAttribute('data-post-url');
           const message = `${postContent}\n\nشاهد المنشور كاملاً: ${postUrl}`;
           const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
-          window.open(whatsappUrl, '_blank');
+          
+          try {
+            // إرسال طلب المشاركة إلى الخادم
+            const response = await fetch(`/forum/post/${postId}/share`, {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            });
+            
+            if (response.ok) {
+              // تحديث عداد المشاركة
+              const shareCountElement = this.querySelector('.count');
+              const currentCount = parseInt(shareCountElement.textContent) || 0;
+              shareCountElement.textContent = currentCount + 1;
+              
+              // فتح واتساب
+              window.open(whatsappUrl, '_blank');
+            } else {
+              console.error('فشل في تحديث عداد المشاركة');
+              // فتح واتساب حتى لو فشل تحديث العداد
+              window.open(whatsappUrl, '_blank');
+            }
+          } catch (error) {
+            console.error('خطأ في مشاركة المنشور:', error);
+            // فتح واتساب حتى لو حدث خطأ
+            window.open(whatsappUrl, '_blank');
+          }
         });
       });
 

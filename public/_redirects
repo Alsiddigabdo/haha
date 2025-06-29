@@ -1,0 +1,10 @@
+# Static files
+/images/* /public/images/:splat
+/icons/* /public/icons/:splat
+/favicon/* /public/favicon/:splat
+/css/* /public/css/:splat
+/js/* /public/js/:splat
+/fontawesome-free-6.6.0-web/* /public/fontawesome-free-6.6.0-web/:splat
+
+# Fallback
+/* /index.js 

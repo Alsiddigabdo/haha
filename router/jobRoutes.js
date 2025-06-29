@@ -2,18 +2,9 @@ const express = require("express");
 const router = express.Router();
 const JobController = require("../controllers/jobControllers");
 const fs = require("fs");
-const multer = require("multer");
+const { upload } = require("../config/multerConfig");
 const path = require("path");
 const verifyToken = require("../middleware/verifyToken");
-
-// استخدام الذاكرة المؤقتة بدلاً من القرص لتجنب مشكلة نظام الملفات للقراءة فقط على Vercel
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // حد أقصى 5 ميجابايت
-  }
-});
 
 router.post("/jobs/add", verifyToken, upload.single("logo"), JobController.addJob);
 router.post("/apply-job", verifyToken, JobController.applyJob);

@@ -1,12 +1,13 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const usersModels = require("../models/UsersModels");
 const db = require("../config/db");
-const cloudinary = require("../config/cloudinaryConfig");
+const { uploadSingleFile } = require("../config/multerConfig");
 const fs = require("fs");
+const express = require("express");
 
 // إعدادات OAuth 2.0 مع بيانات الاعتماد من .env
 const oAuth2Client = new google.auth.OAuth2(
@@ -35,12 +36,14 @@ class UsersControllers {
       let avatarUrl = null;
 
       if (req.file) {
-        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-          folder: "user_avatars",
-          public_id: `avatar-${Date.now()}`,
-        });
-        avatarUrl = uploadResult.secure_url;
-        fs.unlinkSync(req.file.path);
+        // رفع الصورة إلى Cloudinary باستخدام الدالة الجديدة
+        const result = await uploadSingleFile(req.file, 'user_avatars');
+        
+        if (!result.success) {
+          throw new Error('فشل في رفع صورة البروفايل');
+        }
+        
+        avatarUrl = result.url;
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);

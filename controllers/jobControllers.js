@@ -1,6 +1,7 @@
 const JobModel = require("../models/jobModel");
 const NotificationModel = require("../models/NotificationModel");
 const jwt = require("jsonwebtoken");
+const { uploadSingleFile } = require("../config/multerConfig");
 
 class JobController {
   static async addJob(req, res) {
@@ -28,6 +29,18 @@ class JobController {
 
       const isSalaryAfterInterview = salaryAfterInterview === "1" || salaryAfterInterview === "on" || salaryAfterInterview === true ? 1 : 0;
 
+      let logoUrl = null;
+      if (req.file) {
+        // رفع شعار الوظيفة إلى Cloudinary
+        const result = await uploadSingleFile(req.file, 'ihobe-jobs');
+        
+        if (!result.success) {
+          return res.status(500).json({ success: false, message: "فشل في رفع شعار الوظيفة." });
+        }
+        
+        logoUrl = result.url;
+      }
+
       const jobData = {
         title,
         description,
@@ -40,7 +53,7 @@ class JobController {
         location,
         experience,
         duration: parseInt(duration, 10) || 0,
-        logo: req.file ? req.file.filename : null,
+        logo: logoUrl,
         expires_at: duration ? new Date(Date.now() + parseInt(duration) * 86400000).toISOString() : null,
         user_id: userId,
       };
@@ -73,7 +86,7 @@ class JobController {
       await NotificationModel.createAdminNotificationForAllUsers(
         userId,
         `وظيفة جديدة: ${title} أُضيفت بواسطة ${senderName}.`,
-        jobData.logo ? `/Uploads/picjobs/${jobData.logo}` : null
+        jobData.logo
       );
 
       res.status(201).json({ success: true, message: "تم إضافة الوظيفة بنجاح!" });

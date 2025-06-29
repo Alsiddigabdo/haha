@@ -52,6 +52,51 @@ body {
   border-radius: 12px;
   font-size: 0.9rem;
   margin-right: 8px;
+  display: inline-block;
+  min-width: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Ensure notification count in header is properly styled and doesn't conflict */
+.notification-icon .notification-count {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4757;
+  color: white;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  min-width: 18px;
+  text-align: center;
+  z-index: 10;
+}
+
+/* Hide notification count when zero or empty */
+.notification-icon .notification-count[style*="display: none"],
+.notification-icon .notification-count:empty,
+.notification-icon .notification-count[style*="display:none"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Prevent layout shift when notification count changes */
+.notification-icon {
+  position: relative;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+/* Ensure smooth transitions for notification count */
+.notification-count {
+  transition: all 0.3s ease;
 }
 
 .delete-all-btn {

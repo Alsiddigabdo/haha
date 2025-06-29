@@ -1,6 +1,7 @@
 const NotificationModel = require("../models/NotificationModel");
 const ChatModel = require("../models/chatModel");
 const jwt = require("jsonwebtoken");
+const { uploadSingleFile } = require("../config/multerConfig");
 
 class NotificationController {
   static async showNotifications(req, res) {
@@ -226,7 +227,24 @@ class NotificationController {
 
       const senderId = userId;
       const { message } = req.body;
-      const imageUrl = req.file ? `/uploads/notifications/${req.file.filename}` : null;
+      
+      let imageUrl = null;
+      if (req.file) {
+        // رفع صورة الإشعار إلى Cloudinary
+        const result = await uploadSingleFile(req.file, 'ihobe-notifications');
+        
+        if (!result.success) {
+          return res.status(500).render("admin/notify", {
+            errorMessage: "فشل في رفع صورة الإشعار",
+            successMessage: null,
+            unreadCount: await NotificationModel.getUnreadCount(userId),
+            unreadMessagesCount: await ChatModel.getUnreadCount(userId),
+            userId
+          });
+        }
+        
+        imageUrl = result.url;
+      }
 
       if (!message || message.trim() === "") {
         return res.status(400).render("admin/notify", {

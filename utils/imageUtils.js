@@ -4,17 +4,19 @@
  * إذا كان من uploads المحلي، ترجع صورة افتراضية
  */
 
-// الصور الافتراضية - استخدام أسماء ملفات متوافقة مع Linux
+// الصور الافتراضية - استخدام روابط مطلقة
 const DEFAULT_IMAGES = {
-  avatar: '/images/find.png',
-  logo: '/images/find.png',
-  ad: '/images/find.png',
-  post: '/images/find.png',
-  design: '/images/find.png',
-  product: '/images/find.png',
-  store: '/images/find.png',
-  job: '/images/find.png',
-  notification: '/images/find.png'
+  avatar: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-avatar.png',
+  logo: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-logo.png',
+  ad: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-ad.png',
+  post: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-post.png',
+  design: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-design.png',
+  product: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-product.png',
+  store: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-store.png',
+  job: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-job.png',
+  notification: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-notification.png',
+  chat: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-chat.png',
+  project: 'https://res.cloudinary.com/dyftlowtv/image/upload/v1/ihobe-uploads/default-project.png'
 };
 
 /**
@@ -126,6 +128,42 @@ function processNotificationImageUrl(notificationImageUrl) {
   return processImageUrl(notificationImageUrl, 'notification');
 }
 
+/**
+ * دالة لمعالجة صورة الدردشة
+ * @param {string} chatImageUrl - رابط صورة الدردشة
+ * @returns {string} - رابط صورة الدردشة المعالج
+ */
+function processChatImageUrl(chatImageUrl) {
+  return processImageUrl(chatImageUrl, 'chat');
+}
+
+/**
+ * دالة لمعالجة صورة المشروع
+ * @param {string} projectImageUrl - رابط صورة المشروع
+ * @returns {string} - رابط صورة المشروع المعالج
+ */
+function processProjectImageUrl(projectImageUrl) {
+  return processImageUrl(projectImageUrl, 'project');
+}
+
+/**
+ * دالة لمعالجة صورة المنتج
+ * @param {string} productImageUrl - رابط صورة المنتج
+ * @returns {string} - رابط صورة المنتج المعالج
+ */
+function processProductImageUrl(productImageUrl) {
+  return processImageUrl(productImageUrl, 'product');
+}
+
+/**
+ * دالة لمعالجة صورة المتجر
+ * @param {string} storeImageUrl - رابط صورة المتجر
+ * @returns {string} - رابط صورة المتجر المعالج
+ */
+function processStoreImageUrl(storeImageUrl) {
+  return processImageUrl(storeImageUrl, 'store');
+}
+
 module.exports = {
   processImageUrl,
   processAvatarUrl,
@@ -135,5 +173,9 @@ module.exports = {
   processDesignImageUrl,
   processJobImageUrl,
   processNotificationImageUrl,
+  processChatImageUrl,
+  processProjectImageUrl,
+  processProductImageUrl,
+  processStoreImageUrl,
   DEFAULT_IMAGES
 }; 

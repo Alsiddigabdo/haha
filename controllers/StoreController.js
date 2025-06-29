@@ -1,5 +1,5 @@
 const StoreModel = require("../models/StoreModel");
-const cloudinary = require("../config/cloudinaryConfig");
+const { uploadMultipleFiles, uploadSingleFile } = require("../config/multerConfig");
 const path = require("path");
 const fs = require("fs");
 
@@ -226,7 +226,7 @@ class StoreController {
   static async updateStore(req, res) {
     try {
       const { storeId } = req.params;
-      const { name, description, whatsapp_number, currency } = req.body;
+      const { name, description, currency } = req.body;
       const userId = req.user.id;
 
       // التحقق من ملكية المتجر
@@ -238,20 +238,23 @@ class StoreController {
         });
       }
 
-      // معالجة صورة الغلاف إن وجدت
       let coverImage = null;
       if (req.file) {
-        const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-          folder: "store_covers",
-          public_id: `store-${Date.now()}`,
-        });
-        coverImage = uploadResult.secure_url;
-        // حذف الملف المؤقت بعد الرفع إلى Cloudinary
-        fs.unlinkSync(req.file.path);
+        // رفع صورة الغلاف إلى Cloudinary
+        const result = await uploadSingleFile(req.file, 'ihobe-stores');
+        
+        if (!result.success) {
+          return res.status(500).json({
+            success: false,
+            message: "فشل في رفع صورة الغلاف"
+          });
+        }
+        
+        coverImage = result.url;
       }
 
       // تحديث المتجر
-      await StoreModel.updateStore(storeId, name, description, coverImage, whatsapp_number, currency);
+      await StoreModel.updateStore(storeId, name, description, currency, coverImage);
 
       res.json({
         success: true,
@@ -307,16 +310,24 @@ class StoreController {
 
       // معالجة الصور إن وجدت
       if (req.files && req.files.length > 0) {
-        for (let i = 0; i < req.files.length; i++) {
-          const uploadResult = await cloudinary.uploader.upload(req.files[i].path, {
-            folder: "product_images",
-            public_id: `product-${Date.now()}-${i}`,
+        // رفع الصور إلى Cloudinary باستخدام الدالة الجديدة
+        const results = await uploadMultipleFiles(req.files, 'ihobe-products');
+        
+        // التحقق من نجاح جميع الرفعات
+        const failedUploads = results.filter(result => !result.success);
+        if (failedUploads.length > 0) {
+          return res.status(500).json({
+            success: false,
+            message: "فشل في رفع بعض الصور",
+            errors: failedUploads.map(r => r.error)
           });
-          const imagePath = uploadResult.secure_url;
+        }
+
+        // إضافة الصور إلى قاعدة البيانات
+        for (let i = 0; i < results.length; i++) {
+          const imagePath = results[i].url;
           const isPrimary = i === 0; // الصورة الأولى تكون رئيسية
           await StoreModel.addProductImage(productId, imagePath, isPrimary);
-          // حذف الملف المؤقت بعد الرفع إلى Cloudinary
-          fs.unlinkSync(req.files[i].path);
         }
       }
 
@@ -472,36 +483,47 @@ class StoreController {
       const { productId } = req.params;
       const userId = req.user.id;
 
-      // التحقق من الملكية
+      // التحقق من ملكية المنتج
       const product = await StoreModel.getProductById(productId);
-      if (!product || product.store_owner_id !== userId) {
+      if (!product) {
+        return res.status(404).json({
+          success: false,
+          message: "المنتج غير موجود"
+        });
+      }
+
+      if (product.store_owner_id !== userId) {
         return res.status(403).json({
           success: false,
-          message: "غير مصرح لك بتعديل هذا المنتج"
+          message: "غير مصرح لك بإضافة صور لهذا المنتج"
         });
       }
 
       if (!req.file) {
         return res.status(400).json({
           success: false,
-          message: "لم يتم رفع صورة"
+          message: "يجب رفع صورة"
         });
       }
 
-      const uploadResult = await cloudinary.uploader.upload(req.file.path, {
-        folder: "product_images",
-        public_id: `product-${Date.now()}`,
-      });
-      const imagePath = uploadResult.secure_url;
-      const imageId = await StoreModel.addProductImage(productId, imagePath, false);
-      // حذف الملف المؤقت بعد الرفع إلى Cloudinary
-      fs.unlinkSync(req.file.path);
+      // رفع الصورة إلى Cloudinary
+      const result = await uploadSingleFile(req.file, 'ihobe-products');
+      
+      if (!result.success) {
+        return res.status(500).json({
+          success: false,
+          message: "فشل في رفع الصورة"
+        });
+      }
 
-      res.json({
+      // إضافة الصورة إلى قاعدة البيانات
+      const imageId = await StoreModel.addProductImage(productId, result.url, false);
+
+      res.status(201).json({
         success: true,
         message: "تم إضافة الصورة بنجاح",
         imageId: imageId,
-        imagePath: imagePath
+        imageUrl: result.url
       });
 
     } catch (error) {

@@ -1,17 +1,8 @@
 const express = require("express");
-const multer = require("multer");
+const { upload } = require("../config/multerConfig");
 const NotificationController = require("../controllers/NotificationController");
 const ChatController = require("../controllers/chatController"); // لاستخدام markAllAsRead
 const router = express.Router();
-
-// استخدام الذاكرة المؤقتة بدلاً من القرص لتجنب مشكلة نظام الملفات للقراءة فقط على Vercel
-const storage = multer.memoryStorage();
-const upload = multer({ 
-  storage: storage,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // حد أقصى 5 ميجابايت
-  }
-});
 
 // عرض صفحة الإشعارات
 router.get("/notifications", NotificationController.showNotifications);
